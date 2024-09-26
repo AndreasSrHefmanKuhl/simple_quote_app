@@ -2,17 +2,28 @@ import 'package:flutter/material.dart';
 import 'package:simple_quote_app/data/quote_repository.dart';
 import 'package:simple_quote_app/model/quote_data.dart';
 
-class QuoteApp extends StatelessWidget {
+class QuoteApp extends StatefulWidget {
   const QuoteApp({super.key, required this.repository});
 
   final QuoteRepository repository;
 
   @override
+  State<QuoteApp> createState() => QuoteAppState();
+}
+
+class QuoteAppState extends State<QuoteApp> {
+  late QuoteData currentQuote;
+  @override
+  void initState() {
+    super.initState();
+    currentQuote = widget.repository.getQuote();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final QuoteData quote = repository.getQuote();
-    final String author = quote.author;
-    final String text = quote.text;
-    final int ranking = quote.ranking;
+    final String author = currentQuote.author;
+    final String text = currentQuote.text;
+    final int ranking = currentQuote.ranking;
 
     return Scaffold(
       appBar: AppBar(
@@ -40,6 +51,13 @@ class QuoteApp extends StatelessWidget {
               Text("- $author"),
               const SizedBox(height: 16),
               Text("Ranking: $ranking/10"),
+              ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      currentQuote = widget.repository.getQuote();
+                    });
+                  },
+                  child: const Icon(Icons.refresh))
             ],
           ),
         ),
